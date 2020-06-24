@@ -1,0 +1,49 @@
+Entering playback thread (ALSA).
+Get period size: 2756  buffer size: 22050
+Playing input audio file: default_dual.wav
+Entering capture thread (ALSA).
+Get period size: 2756  buffer size: 22050
+Recording ...
+End of playing.
+Playback completed.
+Capture completed.
+
+BAT analysis: signal has 65536 frames at 44100 Hz, 2 channels, 2 bytes per sample.
+
+Channel 1 - Checking for target frequency 997.00 Hz
+Amplitude: 97.9; Percentage: [0]
+WARNING: Signal too weak!
+Detected peak at 4.71 Hz of 17.59 dB
+ Total 27.4 dB from 1.35 to 12.11 Hz
+ WARNING: Found low peak 4.71 Hz, very close to DC
+Detected peak at 14.13 Hz of 13.67 dB
+ Total 27.7 dB from 13.46 to 14.13 Hz
+ FAIL: Peak freq too low 14.13 Hz
+Detected peak at 15.48 Hz of 12.43 dB
+ Total 27.9 dB from 15.48 to 16.15 Hz
+ FAIL: Peak freq too low 15.48 Hz
+Detected peak at 20.86 Hz of 11.43 dB
+ Total 28.0 dB from 20.86 to 20.86 Hz
+ FAIL: Peak freq too low 20.86 Hz
+Detected peak at 22.21 Hz of 13.04 dB
+ Total 28.2 dB from 22.21 to 22.88 Hz
+ FAIL: Peak freq too low 22.21 Hz
+Detected peak at 24.22 Hz of 13.32 dB
+ Total 28.3 dB from 24.22 to 24.22 Hz
+ FAIL: Peak freq too low 24.22 Hz
+Detected peak at 25.57 Hz of 11.19 dB
+ Total 28.4 dB from 25.57 to 25.57 Hz
+ FAIL: Peak freq too low 25.57 Hz
+Detected peak at 28.26 Hz of 11.62 dB
+ Total 28.5 dB from 28.26 to 28.26 Hz
+ FAIL: Peak freq too low 28.26 Hz
+Detected peak at 31.63 Hz of 13.13 dB
+ Total 28.7 dB from 30.95 to 31.63 Hz
+ FAIL: Peak freq too low 31.63 Hz
+Detected peak at 33.65 Hz of 12.32 dB
+ Total 28.8 dB from 33.65 to 33.65 Hz
+ FAIL: Peak freq too low 33.65 Hz
+Detected at least 10 signal(s) in total
+
+Return value is -1003
+alsabat -P default -C default --file default_dual.wav
