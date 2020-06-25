@@ -1,6 +1,7 @@
 import time
 import speech_recognition as sr
-from text2speech import t2s
+#from text2speech import t2s
+from text2speech_vn import t2s
 from time import sleep
 
 r = sr.Recognizer()
@@ -8,25 +9,17 @@ def recognize(note=''):
     #with sr.Microphone(device_index=0) as source:
     with sr.Microphone() as source:
         r.adjust_for_ambient_noise(source, duration = 3)
-        t2s('start speech ' + note)
+        t2s(note)
         t2s('START')
-        #sleep(1)
-        #print('start speech')
-        # while True:
         try:
-            audio = r.listen(source,timeout=5)
-            t2s('DONE')
-            #print('done')
-            #print('infering...')
-            #sleep(1)
+            audio = r.listen(source,timeout=3)
             text = r.recognize_google(audio, language='vi-VN').lower()
         except:
             try:
-                t2s("try again")
+                t2s("Thử lại")
                 t2s('START')
-                audio = r.listen(source,timeout=6)
+                audio = r.listen(source,timeout=3)
                 text = r.recognize_google(audio, language='vi-VN').lower()
-                #print('speech recognition error')
             except:
                 text = 'error'
     print('#speech2text:' + text)
