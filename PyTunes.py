@@ -116,7 +116,9 @@ class App(QMainWindow):
         super().__init__()
 
         self.instance = vlc.Instance()
-        self.mediaplayer = self.instance.media_player_new()
+        #self.mediaplayer = self.instance.media_player_new()
+        self.medialist = self.instance.media_list_new()
+        self.mediaplayer = self.instance.media_list_player_new()
         
         self.title = 'Player'
         self.left = 500
@@ -150,21 +152,21 @@ class App(QMainWindow):
         self.result_label.setText('Danh sách phát')
         # Search
         self.searchInput = QLineEdit()
-        self.searchInput.setFixedHeight(30)
-        #self.searchInput.setText("ok binz")
+        self.searchInput.setFixedHeight(22)
+        self.searchInput.setText("am tham ben em")
         self.searchBtn = QPushButton('Tìm kiếm')
-        self.searchBtn.setFixedHeight(50)
+        self.searchBtn.setFixedHeight(40)
         self.searchBtn.clicked.connect(self.Search)
 
         self.voicesearchBtn = QPushButton('Tìm bằng giọng nói')
-        self.voicesearchBtn.setFixedHeight(50)
+        self.voicesearchBtn.setFixedHeight(40)
         self.voicesearchBtn.clicked.connect(self.VoiceSearch)
 
         self.listAudio = QListWidget()
-        self.listAudio.setFixedHeight(100)
+        self.listAudio.setFixedHeight(120)
         
-        self.current_vol = 50
-        self.mediaplayer.audio_set_volume(self.current_vol)
+        self.current_vol = 60
+        self.mediaplayer.get_media_player().audio_set_volume(self.current_vol)
 
         self.voldown = QPushButton('-')
         self.volup = QPushButton('+')
@@ -183,13 +185,13 @@ class App(QMainWindow):
         self.nextbutton2 = QPushButton('Tiếp theo')  # Next button
         self.nextbutton2.setFixedHeight(50)
         self.command = QPushButton('Ra lệnh bằng giọng nói')  # Next button
-        self.command.setFixedHeight(50)
+        self.command.setFixedHeight(40)
 
         self.shortcut = QShortcut(QKeySequence("Space"), self)
         self.shortcut.activated.connect(self.excCommand)
 
         self.exit = QPushButton('Thoát')  # Next button
-        self.exit.setFixedHeight(50)
+        self.exit.setFixedHeight(40)
         # Add button layouts
         mainLayout = QVBoxLayout()
 
@@ -199,9 +201,6 @@ class App(QMainWindow):
         controls.addWidget(self.nextbutton2)
         controls.addWidget(self.stopbutton)
         controls.addWidget(self.volup)
-        
-
-        #volgroup = QHBoxLayout()
 
         # Add to vertical layout
         mainLayout.addWidget(self.status)
@@ -210,23 +209,18 @@ class App(QMainWindow):
         mainLayout.addWidget(self.listAudio)
         mainLayout.addWidget(self.searchBtn)
         mainLayout.addWidget(self.voicesearchBtn)
-        print(controls)
-        #print(volgroup)
         mainLayout.addLayout(controls)
         mainLayout.addWidget(self.command)
         mainLayout.addWidget(self.exit)
         wid.setLayout(mainLayout)
-        # Connect each signal to their appropriate function
+
         self.playbutton.clicked.connect(self.PlayPause)
         self.stopbutton.clicked.connect(self.Stop)
-        #self.nextbutton.clicked.connect(self.Next)
         self.nextbutton2.clicked.connect(self.Next)
         self.volup.clicked.connect(self.volUp)
         self.voldown.clicked.connect(self.volDown)
 
         self.command.clicked.connect(self.excCommand)
-        #self.volumeslider.valueChanged.connect(self.setVolume)
-        # self.volumeslider.valueChanged.connect(self.volumeslabel.setNum)
         self.exit.clicked.connect(self.exitApp)
         self.statusBar()
         
@@ -237,17 +231,17 @@ class App(QMainWindow):
         exit()
 
     def setVolume(self, Volume):
-        self.mediaplayer.audio_set_volume(Volume)
+        self.mediaplayer.get_media_player().audio_set_volume(Volume)
 
     def volUp(self):
         if self.current_vol < 100:
             self.current_vol = self.current_vol + 20
-            self.mediaplayer.audio_set_volume(self.current_vol)
+            self.mediaplayer.get_media_player().audio_set_volume(self.current_vol)
         
     def volDown(self):
         if self.current_vol > 20:
             self.current_vol = self.current_vol - 20
-            self.mediaplayer.audio_set_volume(self.current_vol)
+            self.mediaplayer.get_media_player().audio_set_volume(self.current_vol)
         
 
     def PlayPause(self):
@@ -258,7 +252,6 @@ class App(QMainWindow):
         else:
             self.mediaplayer.play()
             self.playbutton.setText("Tạm dừng")
-            #self.status.setText("Đang phát")
             
     def Pause(self):
         if self.mediaplayer.is_playing():
@@ -268,11 +261,19 @@ class App(QMainWindow):
     def Stop(self):
         self.mediaplayer.stop()
         self.playbutton.setText("Phát")
-        #self.status.setText("Đã dừng")
     
     def setMediaPlayerUrl(self, url):
-        self.media = self.instance.media_new(url)
-        self.mediaplayer.set_media(self.media)
+        #self.media = self.instance.media_new(url)
+        #self.mediaplayer.set_media(self.media)
+        for u in url:
+            self.medialist.add_media(self.instance.media_new(u))
+        self.mediaplayer.set_media_list(self.medialist)
+
+    def addMediaPlayerUrl(self, url):
+        #self.media = self.instance.media_new(url)
+        #self.mediaplayer.set_media(self.media)
+        self.medialist.add_media(self.instance.media_new(url))
+        self.mediaplayer.set_media_list(self.medialist)
 
     def getListSearch(self):
         self.status.setText('Đang tìm')
@@ -280,33 +281,33 @@ class App(QMainWindow):
             self.status.setText('Nhập từ khóa hoặc tìm bằng giọng nói')
             t2s('Vui lòng nhập từ khóa hoặc tìm kiếm bằng giọng nói')
         else:
-            #t2s(self.searchInput.text())
             print('keyword:', self.searchInput.text())
             print('searching...')
-            results = YoutubeSearch(self.searchInput.text(), max_results=3).to_json()
-            if len(results) == 0:
-                results = YoutubeSearch(self.searchInput.text(), max_results=3).to_json()
+            results = []
+            try:
+                results = YoutubeSearch(self.searchInput.text(), max_results=5).to_json()
+            except:
+                sleep(1)
+                results = YoutubeSearch(self.searchInput.text(), max_results=5).to_json()
             results = json.loads(results)
             results = results["videos"]
-            #print(results)
-            #if self.fornext:
-            #    random.shuffle(results)
-            #print(results)
+
             if len(results) == 0:
                 if self.fornext:
+                    self.listAudio.clear()
                     self.idx_audio = self.idx_audio + 1
-                    #pass
-                    #getListSearch()
+                    self.listAudio.insertItem(0, 'Tiếp theo: ' + self.list_title[self.idx_audio])
+                    self.listAudio.repaint()
                 else:
                     self.status.setText('Không có kết quả hoặc lỗi')
                     t2s('Tôi không thể tìm kiếm Hãy thử lại')
-                    #self.searchInput.setText('')
             else:
                 #tìm kiếm mới
                 self.listAudio_text = {}
                 self.listAudio.clear()
                 self.list_title = [e["title"] for e in results]
-                
+                print("list_title:",self.list_title)
+
                 for i, item in enumerate(results):
                     itemlink = 'https://www.youtube.com' + item['link']
                     self.listAudio_text[self.list_title[i]] = itemlink
@@ -324,7 +325,7 @@ class App(QMainWindow):
 
                 self.listAudio.repaint()
         self.listAudio.repaint()
-        print("search done")
+        print("end search")
 
     def Search(self):
         self.Pause()
@@ -351,7 +352,6 @@ class App(QMainWindow):
         self.status.setText('Tìm kiếm cho: "{}"'.format(keyword))
         self.searchInput.setText(keyword)
         self.Search()
-        #self.selectAndPlaySongByIndex()
         
     def selectAndPlaySongByIndex(self):
         title_audio = list(self.listAudio_text.keys())[self.idx_audio]
@@ -359,11 +359,18 @@ class App(QMainWindow):
         link_audio = getLinkAudio(link_audio)
         t2s('Bắt đầu phát')
         t2s(title_audio)
-        self.setMediaPlayerUrl(link_audio)
+
+        self.addMediaPlayerUrl(link_audio)
 
         next_key = next_keyword(self.list_title)
         self.searchInput.setText(next_key)
         self.getListSearch()
+
+        title_audio2 = list(self.listAudio_text.keys())[self.idx_audio]
+        link_audio2 = list(self.listAudio_text.values())[self.idx_audio]
+        link_audio2 = getLinkAudio(link_audio2)
+        self.addMediaPlayerUrl(link_audio2)
+        #print(self.medialist)
 
         self.PlayPause()
         self.status.setText('Đang phát: {}'.format(title_audio))
@@ -372,20 +379,6 @@ class App(QMainWindow):
         self.Pause()
         self.status.setText("Tiếp theo")
         t2s("Tiếp theo")
-        self.selectAndPlaySongByIndex()
-    
-    # def nextRecommend(self):
-    #     self.status.setText("Tiếp theo gợi ý")
-    #     self.Pause()
-    #     next_key = next_keyword(self.list_title)
-    #     self.status.setText('Tìm kiếm cho: "{}"'.format(next_key))
-    #     self.searchInput.setText(next_key)
-    #     # self.Search(get_idx_by_user=False)
-    #     self.SearchPlay()
-
-    def voiceSelect(self):
-        self.status.setText("Chọn bài hát")
-        self.idx_audio = select_by_speech()
         self.selectAndPlaySongByIndex()
 
     def excCommand(self):

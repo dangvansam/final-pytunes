@@ -33,7 +33,7 @@ def t2s(text, clear_file=False):
     #text = re.findall("(\w+)", text)
     print(text)
     filename = convert(text) + ".mp3"
-    filename = filename.replace("|",'').replace("#",'').replace("?",'')
+    filename = filename.replace("|",'').replace("#",'').replace("?",'').replace("“",'').replace("”",'').replace('"','').replace('"','')
     #print(filename)
     if filename in os.listdir('mp3'):
         #print("đã có file mp3")
