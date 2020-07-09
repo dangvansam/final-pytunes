@@ -30,6 +30,7 @@ def convert(text):
         # deal with upper case
         output = re.sub(regex.upper(), replace.upper(), output)
     return output
+
 #đưa vào 1 đoạn text nó tạo file mp3
 def t2s(text, clear_file=False):
     text  = text.translate(string.punctuation)
