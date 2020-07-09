@@ -5,11 +5,12 @@ from text2speech_vn import t2s
 from time import sleep
 
 r = sr.Recognizer()
-def recognize(note=''):
+def recognize(note=""):
     #with sr.Microphone(device_index=0) as source:
     with sr.Microphone() as source:
         r.adjust_for_ambient_noise(source, duration = 3)
-        t2s(note)
+        if note != "":
+            t2s(note)
         t2s('START')
         try:
             audio = r.listen(source,timeout=3)

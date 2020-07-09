@@ -16,7 +16,6 @@ def next_keyword(list_title):
     exts = ["nhạc", "cover", "music", "remix"]
     for t in list_title:
         t2 = t.translate(string.punctuation)
-        #print(t2.split("-"))
         if "|" in t2:
             for e in t2.split("|"):
                 if len(e.split(" ")) > 1:
@@ -29,17 +28,14 @@ def next_keyword(list_title):
                     if e not in new_keys:
                         new_keys.append(e)
     
-    # new_keys2 = []
-    # for e in new_keys:
-    #     if "-" in e:
-    #         for e2 in e.split("-"):
-    #             e2 = e2.strip()
-    #             if e2 not in new_keys2:
-    #                 new_keys2.append(e2)
-    random.shuffle(new_keys)
-    print(new_keys)
-    next_key = random.choice(exts) + " " + random.choice(new_keys)
-    #print(next_key)
+    #random.shuffle(new_keys)
+    #print(new_keys)
+    next_key = random.choice(new_keys)
+    next_key = next_key.replace('\\','')
+    if len(next_key.split(" ")) < 3:
+        next_key = random.choice(exts) + " " + next_key
+    else:
+        next_key = " ".join([w.strip() for w in next_key.split(" ")[:3]])
     return next_key
 
 #next_keyword(list_title)
